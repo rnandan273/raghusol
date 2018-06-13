@@ -15,6 +15,8 @@
 
 (def job-list (ref #{}))
 
+(def job-req-list (ref #{}))
+
 (def output-log (ref #{}))
 
 (defn job-processor []
@@ -24,6 +26,15 @@
 			    (let [job-spec (<! input-chan)]
 			    	 (println  "Registering Job" job-spec)
 			    	 (dosync (alter job-list conj job-spec)))))
+		input-chan))
+
+(defn job-request-processor []
+	(let [input-chan (chan)
+		  job-map (atom {})]
+		(go (while true 
+			    (let [job-req-spec (<! input-chan)]
+			    	 (println  "Registering Job Request" job-req-spec)
+			    	 (dosync (alter job-req-list conj job-req-spec)))))
 		input-chan))
 
 (defn agent-processor []
@@ -60,42 +71,50 @@
 
 				    (if (not= nil selected-agent)
 				    	(do
-					        (println "Checking agent for Job : " job-type)
-					        (println "Agent Allocated : " selected-agent)
+					        ;(println "Agent Allocated for Job : "  job-type " is " selected-agent)
 						    (dosync 
 						    		(alter busy-agents conj job-spec-mod)
 						    		(alter job-list disj job)))
 				    	 (do (println "No free agent available for " job-type)))
 					(recur (rest jobs))))))
-
-			 ;(println (str "Job Allocator ###############"))
 			 ))))
 
-
-(defn job-request-processor [output-chan]
-	(let [input-chan (chan)
-		  job-map (atom {})]
-
+(defn job-request-allocator [output-chan]
+	(let []
 		(go (while true 
-			    (let [job-req-spec (<! input-chan)
-			    	  selected-agent-spec (first (dosync (filter #(= (:agent_id job-req-spec) (:agent-id %)) @busy-agents)))]
-			    	(>! output-chan {:job-assigned {:id (:id selected-agent-spec) :agent_id (:agent-id selected-agent-spec)}})
-			    	;(println "OUTPUT ==> \n" {:job-assigned {:id (:id selected-agent-spec) :agent_id (:agent-id selected-agent-spec)}})
-			    	(dosync 
-			    		(alter busy-agents disj selected-agent-spec)
-			    		(alter output-log conj {:job-assigned {:id (:id selected-agent-spec) :agent_id (:agent-id selected-agent-spec)}})
-			    		))))
-		input-chan))
+			(Thread/sleep (rand 10000))
+
+			(loop [jobs @job-req-list]
+		    (let [size (count jobs)]
+		      (when (> size 0)
+		        (let [job (first jobs)
+		        	  selected-agent-spec (first (dosync (filter #(= (:agent_id job) (:agent-id %)) @busy-agents)))]
+                   ;(println "In Job request allocator " job "-" selected-agent-spec)
+
+                   (if (not= nil selected-agent-spec)
+				    	(do
+					        ;(println "Agent handling : "  job " is " selected-agent-spec)
+						    (>! output-chan {:job-assigned {:id (:id selected-agent-spec) :agent_id (:agent-id selected-agent-spec)}})
+					    	(dosync 
+					    		(alter busy-agents disj selected-agent-spec)
+					    		(alter output-log conj {:job-assigned {:id (:id selected-agent-spec) :agent_id (:agent-id selected-agent-spec)}})
+					    		)
+						    ))
+				   
+					(recur (rest jobs))))))))))
 
 (def agentpr (agent-processor))
 
 (def jobpr (job-processor))
 
+(def jobreqpr (job-request-processor))
+
 (def outpr (chan))
 
-(def jobreqpr (job-request-processor outpr))
 
 (def job-allocator (job-allocator))
+
+(def job-request-allocator (job-request-allocator outpr))
 
 
 (defn process-agents [feed-json]
@@ -123,8 +142,6 @@
 	      (when (> size 0)
 	        (let [item (first items)]
 	            (go 
-	  				(Thread/sleep (rand 50000))
-	  				(println "Adding Job completion -> " item)
 	  	            (>! jobreqpr item)))
 				(recur (rest items))))))
 
@@ -146,13 +163,11 @@
        
         (while true 
         	  (do 
-        	  	(Thread/sleep (rand 100000))
+        	  	(Thread/sleep (rand 10000))
         	    (println (str "OUTPUT PRINT" (<!! outpr)))))
      
      (catch Exception e (str "caught exception: " (.getMessage e) "\nPlease provide a valid JSON"))
      (finally
-     	(do
-     		(Thread/sleep (rand 15000))
-     		(println (str "Your output is " @output-log))))))
+     	)))
 
 
