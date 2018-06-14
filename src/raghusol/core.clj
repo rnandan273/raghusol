@@ -7,7 +7,7 @@
                      alts! alts!! timeout]])
   (:gen-class))
 
-(def input-json (json/read-str (slurp (io/file "./sample-input.json.txt")) :key-fn keyword))
+(def input-json-test (json/read-str (slurp (io/file "./sample-input.json.txt")) :key-fn keyword))
 
 (def agents (ref #{}))
 
@@ -81,7 +81,7 @@
 						    (dosync 
 						    		(alter busy-agents conj job-spec-mod)
 						    		(alter job-list disj job)))
-				    	 (do (println "No free agent available for " job-type)))
+				    	 (do (println "Waiting for next available agent " job-type)))
 					(recur (rest jobs))))))
 			 ))))
 
@@ -164,12 +164,15 @@
   "The main function, which reads the input json string containing the agents, jobs and job requests.
   Registers them to the system and the system will pick them up"
   [& args]
-  (println "Please type the json feed data")
+  (println "Do you choose to provide the feed data (Yes/No)\nIf Yes : Provide json data \nIf No : Allow the system to process sample json")
   (try
-    ; (def json-input (json/read-str (read-line) :key-fn keyword))
+  	(def input-json (case (read-line)
+  		              "Yes" (do (println "Provide a json data")
+  		              	        (read-line))
+  		              "No" (json/read-str (slurp (io/file "./sample-input.json.txt")) :key-fn keyword)
+  	                  "Please answer Yes or No"))
     (do
-     	(def input-json (json/read-str (slurp (io/file "./sample-input.json.txt")) :key-fn keyword))
-     	;(println (str "Your input is " input-json))
+     	(println (str "Processing data \n" input-json))
         (let [agents-list (map :new_agent (filter :new_agent input-json))
         	  ;sort by urgency level
         	  jobs-list (sort-by #(= false (:urgent %)) (map :new_job (filter :new_job input-json)))
