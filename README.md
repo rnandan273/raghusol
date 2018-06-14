@@ -1,24 +1,34 @@
 # raghusol
 
-FIXME: description
+Solution to the dequeue problem.
+The solution expects a JSON input which consists of 
+agents
+jobs and 
+job requests
 
 ## Installation
 
-Download from http://example.com/FIXME.
+Compile using : lein uberjar
 
 ## Usage
 
-FIXME: explanation
+
+Run : lein run OR
+      java -jar raghusol-0.1.0-SNAPSHOT-standalone.jar
 
     $ java -jar raghusol-0.1.0-standalone.jar [args]
 
 ## Options
 
-FIXME: listing of options this app accepts.
+Yes : to provide a json data
+No : to use a sample json input
 
 ## Examples
 
-...
+Do you choose to provide the feed data (Yes/No)
+If Yes : Provide json data 
+If No : Allow the system to process sample json
+No
 
 ### Bugs
 
