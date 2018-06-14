@@ -81,7 +81,7 @@
 						    (dosync 
 						    		(alter busy-agents conj job-spec-mod)
 						    		(alter job-list disj job)))
-				    	 (do (println "Waiting for next available agent " job-type)))
+				    	 (do (println "Waiting for next available agent to process " job-type)))
 					(recur (rest jobs))))))
 			 ))))
 
@@ -102,10 +102,10 @@
                    (if (not= nil selected-agent-spec)
 				    	(do
 					        ;(println "Agent handling : "  job " is " selected-agent-spec)
-						    (>! output-chan {:job-assigned {:id (:id selected-agent-spec) :agent_id (:agent-id selected-agent-spec)}})
+						    (>! output-chan {:job-assigned {:job_id (:id selected-agent-spec) :agent_id (:agent-id selected-agent-spec)}})
 					    	(dosync 
 					    		(alter busy-agents disj selected-agent-spec)
-					    		(alter output-log conj {:job-assigned {:id (:id selected-agent-spec) :agent_id (:agent-id selected-agent-spec)}})
+					    		(alter output-log conj {:job-assigned {:job_id (:id selected-agent-spec) :agent_id (:agent-id selected-agent-spec)}})
 					    		)
 						    ))
 				   
