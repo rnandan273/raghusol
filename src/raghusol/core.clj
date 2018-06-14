@@ -19,7 +19,9 @@
 
 (def output-log (ref #{}))
 
-(defn job-processor []
+(defn job-processor 
+	"Registers each new job in the working job list"
+	[]
 	(let [input-chan (chan)
 		  job-map (atom {})]
 		(go (while true 
@@ -28,7 +30,9 @@
 			    	 (dosync (alter job-list conj job-spec)))))
 		input-chan))
 
-(defn job-request-processor []
+(defn job-request-processor
+   "Registers each new job request in the working job request list"
+    []
 	(let [input-chan (chan)
 		  job-map (atom {})]
 		(go (while true 
@@ -37,7 +41,9 @@
 			    	 (dosync (alter job-req-list conj job-req-spec)))))
 		input-chan))
 
-(defn agent-processor []
+(defn agent-processor 
+	"Registers each new agent in the agent list"
+	[]
 	(let [input-chan (chan)
 		  job-map (atom {})]
 	(go (while true 
@@ -47,12 +53,12 @@
 		    	(dosync (alter agents conj agent-spec)))))
 	input-chan))
 
-(defn job-allocator []
+(defn job-allocator 
+	"Allocates each job by matching them against the rules first check primary skills, if not available look at secondary skills"
+	[]
 	(let []
 		(go (while true 
-			(Thread/sleep (rand 10000))
-			;(println (str "Job Allocator ***************" @agents))
-
+			(Thread/sleep (rand 15000))
 			(loop [jobs @job-list]
 		    (let [size (count jobs)]
 		      (when (> size 0)
@@ -79,10 +85,12 @@
 					(recur (rest jobs))))))
 			 ))))
 
-(defn job-request-allocator [output-chan]
+(defn job-request-allocator
+   "The last job allocated is done, hence frees up the agent and signals job done"
+    [output-chan]
 	(let []
 		(go (while true 
-			(Thread/sleep (rand 10000))
+			(Thread/sleep (rand 15000))
 
 			(loop [jobs @job-req-list]
 		    (let [size (count jobs)]
@@ -103,6 +111,8 @@
 				   
 					(recur (rest jobs))))))))))
 
+;; Channel handlers
+
 (def agentpr (agent-processor))
 
 (def jobpr (job-processor))
@@ -111,13 +121,14 @@
 
 (def outpr (chan))
 
-
 (def job-allocator (job-allocator))
 
 (def job-request-allocator (job-request-allocator outpr))
 
-
-(defn process-agents [feed-json]
+;; Main function
+(defn process-agents 
+	"Reads the input and pushes to the agent channel"
+	[feed-json]
 	(loop [items feed-json]
 	    (let [size (count items)]
 	      (when (> size 0)
@@ -126,7 +137,9 @@
 			    	(>! agentpr item)))
 				(recur (rest items))))))
 
-(defn process-jobs [feed-json]
+(defn process-jobs 
+	"Reads the input and pushes to the jobs channel"
+	[feed-json]
 	(loop [items feed-json]
 	    (let [size (count items)]
 	      (when (> size 0)
@@ -136,7 +149,9 @@
 				  (recur (rest items)))))))
 
 
-(defn process-job-requests [feed-json]
+(defn process-job-requests 
+	"Reads the input and pushes to the job requests channel"
+	[feed-json]
 	(loop [items feed-json]
 	    (let [size (count items)]
 	      (when (> size 0)
@@ -146,7 +161,8 @@
 				(recur (rest items))))))
 
 (defn -main
-  "I don't do a whole lot ... yet."
+  "The main function, which reads the input json string containing the agents, jobs and job requests.
+  Registers them to the system and the system will pick them up"
   [& args]
   (println "Please type the json feed data")
   (try
@@ -155,6 +171,7 @@
      	(def input-json (json/read-str (slurp (io/file "./sample-input.json.txt")) :key-fn keyword))
      	;(println (str "Your input is " input-json))
         (let [agents-list (map :new_agent (filter :new_agent input-json))
+        	  ;sort by urgency level
         	  jobs-list (sort-by #(= false (:urgent %)) (map :new_job (filter :new_job input-json)))
         	  jobs-request-list (map :job_request (filter :job_request input-json))]
         	(process-agents agents-list)
@@ -164,10 +181,9 @@
         (while true 
         	  (do 
         	  	(Thread/sleep (rand 10000))
-        	    (println (str "OUTPUT PRINT" (<!! outpr)))))
+        	    (println (str "<====== CONSOLE OUTPUT ======>\n" (<!! outpr)))))
      
      (catch Exception e (str "caught exception: " (.getMessage e) "\nPlease provide a valid JSON"))
-     (finally
-     	)))
+     (finally)))
 
 
