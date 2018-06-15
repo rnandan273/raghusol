@@ -26,9 +26,9 @@ No : to use a sample json input
 ## Examples
 
 Do you choose to provide the feed data (Yes/No)
-If Yes : Provide json data 
+If Yes : Provide json data
+
 If No : Allow the system to process sample json
-No
 
 ### Bugs
 
