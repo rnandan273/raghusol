@@ -16,7 +16,7 @@ Compile using : lein uberjar
 Run : lein run OR
       java -jar raghusol-0.1.0-SNAPSHOT-standalone.jar
 
-    $ java -jar raghusol-0.1.0-standalone.jar [args]
+    $ java -jar raghusol-0.1.0-standalone.jar 
 
 ## Options
 
