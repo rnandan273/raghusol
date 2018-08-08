@@ -9,7 +9,9 @@
 
 (def stop-words (list "What" "Which" "Where" "and" "the" "of" "is" "to" "zebra" "Zebras"))
 
-(defn do-score [token item]
+(defn do-score 
+	"Do the similarity score"
+	[token item]
 	(->> (map #(clojure.string/includes? token %) 
 		       (clojure.set/difference 
                  (into #{} (clojure.string/split (str item) #" "))
