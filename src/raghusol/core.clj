@@ -18,15 +18,18 @@
     	 (count)))
 
 
-(defn score-questions [token txt]
-	(let [])
+(defn score-questions 
+	"Scores the questions to match the text tokens"
+	[token txt]
 	{:question token
     	         :matching-txt 
     	         (->> (map (fn [x] 
 		                {:txt x
 		                 :score (do-score token x)}) txt))})
 
-(defn filter-by-hints [txt hints]
+(defn filter-by-hints 
+	"Filters hints by highest score"
+	[txt hints]
 	(let [matches  (map (fn [x] 
 					         {:txt (:txt txt) 
 					          :score (+ (:score txt) (do-score (:txt txt) x))}) 
@@ -34,18 +37,24 @@
 	     max-score (apply max (map :score  (sort-by :score matches)))]
          (filter #(= max-score (:score %)) matches)))
 
-(defn score-hints [token hints]
+(defn score-hints 
+	"Scores the hints to match the text tokens"
+	[token hints]
 	{:question (:question token)
      :matching-txt (filter-by-hints (first (:matching-txt token)) hints)})
 
 
-(defn filter-questions-by-max-score [items]
+(defn filter-questions-by-max-score 
+	"Filters hints by highest score"
+	[items]
      (let [matches (:matching-txt items)
      	   max-score (apply max (map :score (sort-by :score matches)))]
      {:question (:question items) :matching-txt (filter #(= max-score (:score %)) matches)}))
 
 
-(defn investigate []
+(defn investigate 
+	"Runs the algorithm, parses the file and instantiates the data structures for the pipeline processing"
+	[]
 	(let [data (-> (slurp (io/file "./data.txt"))
 		           (clojure.string/split #"\n"))
 	      tokens (into [] (reverse data))
