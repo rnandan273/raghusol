@@ -1,10 +1,6 @@
 # raghusol
 
-Solution to the dequeue problem.
-The solution expects a JSON input which consists of 
-agents
-jobs and 
-job requests
+Solution to the assignment
 
 ## Installation
 
@@ -20,15 +16,15 @@ Run : lein run OR
 
 ## Options
 
-Yes : to provide a json data
-No : to use a sample json input
+Yes : to run the program
+No : to abort
 
 ## Examples
 
-Do you choose to provide the feed data (Yes/No)
-If Yes : Provide json data
+Do you choose to investigate the feed data 
+If Yes : Run the program reading the standard data.txt file
 
-If No : Allow the system to process sample json
+If No : Thanks and have a great day
 
 ### Bugs
 
