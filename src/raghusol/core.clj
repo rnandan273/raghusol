@@ -9,7 +9,7 @@
 
 (def stop-words (list "What" "Which" "Where" "and" "the" "of" "is" "to" "zebra" "Zebras"))
 
-(defn do-score 
+(defn do-similarity-score 
 	"Do the similarity score"
 	[token item]
 	(->> (map #(clojure.string/includes? token %) 
@@ -27,14 +27,14 @@
     	         :matching-txt 
     	         (->> (map (fn [x] 
 		                {:txt x
-		                 :score (do-score token x)}) txt))})
+		                 :score (do-similarity-score token x)}) txt))})
 
 (defn filter-by-hints 
 	"Filters hints by highest score"
 	[txt hints]
 	(let [matches  (map (fn [x] 
 					         {:txt (:txt txt) 
-					          :score (+ (:score txt) (do-score (:txt txt) x))}) 
+					          :score (+ (:score txt) (do-similarity-score (:txt txt) x))}) 
 	                hints)
 	     max-score (apply max (map :score  (sort-by :score matches)))]
          (filter #(= max-score (:score %)) matches)))
@@ -47,14 +47,14 @@
 
 
 (defn filter-questions-by-max-score 
-	"Filters hints by highest score"
+	"Filters questions by highest score"
 	[items]
      (let [matches (:matching-txt items)
      	   max-score (apply max (map :score (sort-by :score matches)))]
      {:question (:question items) :matching-txt (filter #(= max-score (:score %)) matches)}))
 
 
-(defn investigate 
+(defn process-data 
 	"Runs the algorithm, parses the file and instantiates the data structures for the pipeline processing"
 	[]
 	(let [data (-> (slurp (io/file "./data.txt"))
@@ -71,9 +71,9 @@
 (defn -main
   "The main function"
   [& args]
-  (println "Do you choose to investigate the feed data (Yes/No)\nIf Yes : Run the solution \nIf No : Exit")
+  (println "Do you choose to process the data (Yes/No)\nIf Yes : Run the solution \nIf No : Exit")
   (case (read-line)
-  	"Yes" (println (for [x (investigate)] 
+  	"Yes" (println (for [x (process-data )] 
   		        (str (:question x) "\n" 
   		            (str (:txt (first (:matching-txt x))) "\n"))))
   	"No"  (println "Have a good day")

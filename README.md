@@ -1,6 +1,7 @@
 # raghusol
 
 Solution to the assignment
+This is a functional approach to solving the problem using Clojure.
 
 ## Installation
 
@@ -12,7 +13,7 @@ Compile using : lein uberjar
 Run : lein run OR
       java -jar raghusol-0.1.0-SNAPSHOT-standalone.jar
 
-    $ java -jar raghusol-0.1.0-standalone.jar 
+    $ java -jar raghusol-0.1.0-SNAPSHOT-standalone.jar 
 
 ## Options
 
