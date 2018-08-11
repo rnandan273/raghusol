@@ -74,8 +74,8 @@
   (println "Do you choose to process the data (Yes/No)\nIf Yes : Run the solution \nIf No : Exit")
   (case (read-line)
   	"Yes" (println (for [x (process-data )] 
-  		        (str (:question x) "\n" 
-  		            (str (:txt (first (:matching-txt x))) "\n"))))
+              (str "\n Q: " (:question x) "\n A: " 
+                  (str (:txt (first (:matching-txt x))) "\n\n"))))
   	"No"  (println "Have a good day")
   	(println "Have a good day")))
 
