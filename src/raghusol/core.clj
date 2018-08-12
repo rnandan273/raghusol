@@ -58,9 +58,9 @@
 	(let [data (-> (slurp (io/file data-file))
 		             (clojure.string/split #"\n"))
 	      tokens (into [] (reverse data))
-		  txt (clojure.string/split (nth (into [] (reverse data)) 6) #"\. ")
-		  questions (conj [] (nth tokens 1) (nth tokens 2) (nth tokens 3) (nth tokens 4) (nth tokens 5))
-		  hints (clojure.string/split (nth tokens 0) #";")]
+		  txt (clojure.string/split (first data)  #"\. ")
+		  questions (subvec data 1 (dec (count data)))
+		  hints (clojure.string/split (last data) #";")]
           (->> (->> (map #(score-questions stop-words % txt) questions) 
  	  		   		      (map filter-questions-by-max-score))
                (map #(score-hints stop-words % hints)))))
