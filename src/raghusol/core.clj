@@ -54,9 +54,9 @@
 
 (defn process-data 
 	"Runs the algorithm, parses the file and instantiates the data structures for the pipeline processing"
-	[stop-words]
-	(let [data (-> (slurp (io/file "./data.txt"))
-		           (clojure.string/split #"\n"))
+	[stop-words data-file]
+	(let [data (-> (slurp (io/file data-file))
+		             (clojure.string/split #"\n"))
 	      tokens (into [] (reverse data))
 		  txt (clojure.string/split (nth (into [] (reverse data)) 6) #"\. ")
 		  questions (conj [] (nth tokens 1) (nth tokens 2) (nth tokens 3) (nth tokens 4) (nth tokens 5))
@@ -74,13 +74,14 @@
   (case (read-line)
   	"Yes" (do (println "Please provide comma separated stop words to do the similarity scoring \n Here is a sample 
                        \"What\",\"Which\",\"Where\",\"and\",\"the\",\"of\", \"is\",\"to\", \"zebra\",\"Zebras\"")
-  	      (let [stop-words (-> (read-line)
-                              (clojure.string/split #","))]
-  	      	(println "Stop chosen are => " stop-words)
-  	      	
-  	       (println (for [x (process-data stop-words)] 
-              (str "\n Q: " (:question x) "\n A: " 
-                  (str (:txt (first (:matching-txt x))) "\n\n"))))))
+    	      (let [stop-words (-> (read-line)
+                                (clojure.string/split #","))]
+    	      	(println "Stop chosen are => " stop-words)
+              (println "Please provide location of the data file eg: ./data.txt")
+    	      	(let [data-file (read-line)]
+        	       (println (for [x (process-data stop-words data-file)] 
+                    (str "\n Q: " (:question x) "\n A: " 
+                        (str (:txt (first (:matching-txt x))) "\n\n")))))))
   	"No"  (println "Have a good day")
   	(println "Have a good day")))
 

@@ -22,10 +22,35 @@ No : to abort
 
 ## Examples
 
-Do you choose to investigate the feed data 
-If Yes : Run the program reading the standard data.txt file
+Do you choose to process the data (Yes/No)
+If Yes : Run the solution 
+If No : Exit
+Yes
+Please provide comma separated stop words to do the similarity scoring 
+ Here is a sample 
+                       "What","Which","Where","and","the","of", "is","to", "zebra","Zebras"
+"What","Which","Where","and","the","of", "is","to", "zebra","Zebras"
+Stop chosen are =>  ["What" "Which" "Where" "and" "the" "of"  "is" "to"  "zebra" "Zebras"]
+Please provide location of the data file eg: ./data.txt
 
-If No : Thanks and have a great day
+ Q: Which subgenus do the plains zebra and the mountain zebra belong to?
+ A: The plains zebra and the mountain zebra belong to the subgenus Hippotigris, but Grévy's zebra is the sole species of subgenus Dolichohippus
+
+ 
+ Q: Which are the three species of zebras?
+ A: There are three species of zebras: the plains zebra, the Grévy's zebra and the mountain zebra
+
+ 
+ Q: Which animals are some of their closest relatives?
+ A: Zebras are several species of African equids (horse family) united by their distinctive black and white stripes
+
+ 
+ Q: What is the aim of the Quagga Project?
+ A: Though there is currently a plan, called the Quagga Project, that aims to breed zebras that are phenotypically similar to the Quagga, in a process called breeding back.
+
+ 
+ Q: Which Zebras are endangered?
+ A: Zebras are several species of African equids (horse family) united by their distinctive black and white stripes
 
 ### Bugs
 
